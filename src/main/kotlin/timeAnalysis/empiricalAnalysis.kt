@@ -2,27 +2,24 @@ package timeAnalysis
 
 import kotlin.math.sqrt
 
-fun <T> linearRegression(data: Map<Double,Double>) : RegressionResult{
+fun linearRegression(data: Map<Double,Double>) : RegressionResult{
     val xAverage = data.keys.average()
     val yAverage = data.values.average()
 
-    var xSumOfDeviationSquares = 0.0
-    var ySumOfDeviationSquares = 0.0
+    val xStandardDeviation = sqrt(data.keys.sumByDouble { (it - xAverage) * (it - xAverage) } / (data.size - 1))
+    val yStandardDeviation = sqrt(data.values.sumByDouble { (it - xAverage) * (it - xAverage) } / (data.size - 1))
 
-    var covarianceSum = 0.0
+    println(xAverage)
+    println(xStandardDeviation)
 
-    for(entry in data){
-        val xDifference = entry.key - xAverage
-        val yDifference = entry.value - yAverage
-        covarianceSum += yDifference * xDifference
-        xSumOfDeviationSquares += xDifference * xDifference
-        ySumOfDeviationSquares += yDifference * yDifference
-    }
+    val covariance = data.entries.sumByDouble {(it.key - xAverage) * (it.value - yAverage)} / (data.size -1)
 
-    val xStandardDeviation = sqrt(xSumOfDeviationSquares / data.size)
-    val yStandardDeviation = sqrt(ySumOfDeviationSquares / data.size)
+    val correlation = covariance / (xStandardDeviation  * yStandardDeviation)
 
-    val covariance = covarianceSum / (data.size - 1)
+    println(covariance)
 
-    return RegressionResult(0.0,0.0,0.0,0.0)
+    val slope = yStandardDeviation / xStandardDeviation * correlation
+    val axisIntercept = yAverage - slope * xAverage
+
+    return RegressionResult(correlation,slope,axisIntercept)
 }
