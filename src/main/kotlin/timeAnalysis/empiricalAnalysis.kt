@@ -6,6 +6,14 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 fun linearRegression(data: Map<Double,Double>) : RegressionResult{
+    if(data.size < 2){
+        return if(data.isEmpty()){
+            RegressionResult(1.0,0.0,0.0)
+        } else {
+            val slope = data.entries.first().value / data.entries.first().key
+            RegressionResult(1.0,slope,0.0)
+        }
+    }
     val xAverage = data.keys.average()
     val yAverage = data.values.average()
 
@@ -14,7 +22,7 @@ fun linearRegression(data: Map<Double,Double>) : RegressionResult{
     val xStandardDeviation = sqrt(reducedByMean.keys.sumByDouble { it * it } / (data.size - 1))
     val yStandardDeviation = sqrt(reducedByMean.values.sumByDouble { it * it } / (data.size - 1))
 
-    val covariance = reducedByMean.entries.sumByDouble {it.key * it.value} / (data.size -1)
+    val covariance = reducedByMean.entries.sumByDouble {it.key * it.value} / (data.size - 1)
     val correlation = covariance / (xStandardDeviation  * yStandardDeviation)
 
     val slope = yStandardDeviation / xStandardDeviation * correlation
@@ -29,7 +37,7 @@ fun powerTest(data: Map<Double, Double>): PowerTestResult{
     return PowerTestResult(10.0.pow(regression.axisIntercept),regression.slope, regression.correlation)
 }
 
-fun polynomialRuntimeTest(): PowerTestResult{
+fun polynomialRuntimeTest(minimum: Int = 1): PowerTestResult{
 
     return PowerTestResult(0.0,0.0,0.0)
 }
